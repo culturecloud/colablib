@@ -6,7 +6,7 @@ from .py_utils import get_filename
 from tqdm import tqdm
 from ..colored_print import cprint
 
-def ubuntu_deps(url, dst, desc=None):
+def ubuntu_deps(url, dst, desc=None, cleanup=True):
     """
     Downloads, extracts, and installs .deb files from a given URL.
 
@@ -15,7 +15,7 @@ def ubuntu_deps(url, dst, desc=None):
         dst (str): The directory to extract to and install the .deb files from.
     """
     os.makedirs(dst, exist_ok=True)
-    filename  = get_filename(url)
+    filename  = os.path.join(dst, get_filename(url))
     
     response = requests.get(url, stream=True)
     response.raise_for_status()
@@ -34,13 +34,13 @@ def ubuntu_deps(url, dst, desc=None):
         deb_files = [os.path.join(dst, f) for f in os.listdir(dst) if f.endswith('.deb')]
         for deb_file in tqdm(deb_files, desc=desc):
             os.system(f'dpkg -i {deb_file}')
-            
-        os.remove(filename)
-        shutil.rmtree(dst)
 
     elif filename.endswith(".deb"):
         deb_file = os.path.join(dst, filename)
         os.system(f'dpkg -i {deb_file}')
+
+    if cleanup:
+        shutil.rmtree(dst)
 
 def unionfuse(fused_dir: str, source_dir: str, destination_dir: str):
     """
