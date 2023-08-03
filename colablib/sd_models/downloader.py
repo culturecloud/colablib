@@ -61,6 +61,7 @@ def aria2_download(download_dir: str, filename: str , url: str, quiet: bool=Fals
         "_url"                      : url,
     }
     aria2_args = parse_args(aria2_config)
+    print(aria2_args)
     subprocess.run(["aria2c", *aria2_args])
     
     if not quiet:
